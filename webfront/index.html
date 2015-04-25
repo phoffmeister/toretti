@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="static/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript">
+			
+			// Extended disable function
+jQuery.fn.extend({
+    disable: function(state) {
+        return this.each(function() {
+            var $this = $(this);
+            if($this.is('input, button'))
+              this.disabled = state;
+            else
+              $this.toggleClass('disabled', state);
+        });
+    }
+});
+			
+			
+			$(document).ready(function() {
+				$("#turn-clockwise-left").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "PUT",
+						url: "/control",
+						data: { "motor": "left",
+								"steps": $("input[name='steps-links']").val(),
+								"direction": "cw"}
+					}).done(function() {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+				$("#turn-counterclockwise-left").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "PUT",
+						url: "/control",
+						data: { "motor": "left",
+								"steps": $("input[name='steps-links']").val(),
+								"direction": "ccw"}
+					}).done(function() {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+				$("#turn-clockwise-right").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "PUT",
+						url: "/control",
+						data: { "motor": "right",
+								"steps": $("input[name='steps-rechts']").val(),
+								"direction": "cw"}
+					}).done(function() {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+				$("#turn-counterclockwise-right").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "PUT",
+						url: "/control",
+						data: { "motor": "right",
+								"steps": $("input[name='steps-rechts']").val(),
+								"direction": "ccw"}
+					}).done(function() {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+				$("#pen-up").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "PUT",
+						url: "/control",
+						data: { "motor": "servo",
+								"steps": 0,
+								"direction": "up"}
+					}).done(function() {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+				$("#pen-down").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "PUT",
+						url: "/control",
+						data: { "motor": "servo",
+								"steps": 0,
+								"direction": "down"}
+					}).done(function() {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+				$("#draw").click(function(e) {
+					$('input, button, a').disable(true);
+					$.ajax({
+						type: "POST",
+						url: "/control",
+						data: { "Alpha1": $("input[name='val-alpha1']").val(),
+								"Alpha2": $("input[name='val-alpha2']").val(),
+								"Beta": $("input[name='val-beta']").val(),
+								"P": $("input[name='val-p']").val(),
+								"B": $("input[name='val-b']").val(),
+								"A": $("input[name='val-a']").val(),
+								"R": $("input[name='val-r']").val(),
+								"S": $("input[name='val-s']").val(),
+								"L1_alt": $("input[name='val-l1_alt']").val(),
+								"L2_alt": $("input[name='val-l2_alt']").val()
+							}
+					}).done(function(string) {
+						$('input, button, a').disable(false);
+					});
+					e.preventDefault();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<img src="static/pics/img.jpg"/>
+		<img src="static/pics/canny.jpg"/>
+		<a href="/picupload">Upload</a>
+		<div id="left-motor">
+			<span>Linker Motor</span>
+			<input type="text" size="1" name="steps-links" value="128"/>
+			<button id="turn-clockwise-left">IM Uhrzeigersinn</button>
+			<button id="turn-counterclockwise-left">GEGEN den Uhrzeigersinn</button>
+		</div>
+		<div id="right-motor">
+			<span>Rechter Motor</span>
+			<input type="text" size="1" name="steps-rechts" value="128"/>
+			<button id="turn-clockwise-right">IM Uhrzeigersinn</button>
+			<button id="turn-counterclockwise-right">GEGEN den Uhrzeigersinn</button>
+		</div>
+		<div id="servo">
+			<span>Stift</span>
+			<button id="pen-up">Hoch</button>
+			<button id="pen-down">Runter</button>
+		</div>
+		
+		<hr>
+		<!-- Alpha1, Alpha2, Beta, P, B , A, R, S 
+			70.0,20.0,800.0,2.0,230.0,-190.0,14.2,800.0-->
+		<table border="1">
+		<caption>Abmessungen</caption>
+		<tbody>
+		<tr>
+			<td>alpha1</td><td><input type="text" size="1" name="val-alpha1" value="140.0" /></td>
+		</tr>
+		<tr>
+			<td>alpha2</td><td><input type="text" size="1" name="val-alpha2" value="140.0" /></td>
+		</tr>
+		<tr>
+			<td>beta</td><td><input type="text" size="1" name="val-beta" value="700.0" /></td>
+		</tr>
+		<tr>
+			<td>p</td><td><input type="text" size="1" name="val-p" value="1.25" /></td>
+		</tr>
+		<tr>
+			<td>b</td><td><input type="text" size="1" name="val-b" value="90.0" /></td>
+		</tr>
+		<tr>
+			<td>a</td><td><input type="text" size="1" name="val-a" value="-270.0" /></td>
+		</tr>
+		<tr>
+			<td>r</td><td><input type="text" size="1" name="val-r" value="14.2" /></td>
+		</tr>
+		<tr>
+			<td>s</td><td><input type="text" size="1" name="val-s" value="800.0" /></td>
+		</tr>
+		<tr>
+			<td>l1</td><td><input type="text" size="1" name="val-l1_alt" value="555.0" /></td>
+		</tr>
+		<tr>
+			<td>l2</td><td><input type="text" size="1" name="val-l2_alt" value="585.0" /></td>
+		</tr>
+		</tbody>
+		</table>
+		<button id="draw">DRAW</button>
+	</body>
+</html>
