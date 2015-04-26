@@ -1,21 +1,40 @@
 from Toretti import Abmessungen
 from Toretti import draw
+from Toretti import get_time
 from Stepper import PiStepper
 from Servo import PiServo
 import os, os.path
 import cherrypy
 import cv2
 
-class MotorControl(object):
+class MotorControl(object):	
 	@cherrypy.expose
 	def index(self):
 		return file('index.html')
 
-class MotorControlWebService(object):
+class Indication(object):
 	exposed = True
 	
-	stepper_l = PiStepper([14,15,18,23],0.002)
-	stepper_r = PiStepper([17,27,22,10],0.002)
+	def POST(self, information, Alpha1, Alpha2, Beta, P, B , A, R, S, L1_alt, L2_alt):
+		M = Abmessungen(float(Alpha1), float(Alpha2), float(Beta), float(P), float(B) ,float(A), float(R),float(S), float(L1_alt), float(L2_alt))
+		img = cv2.imread("public/pics/img.jpg",0)
+		can = cv2.Canny(img, 100,200)
+		
+		if information == 'time':
+			return str(get_time(can,M)/60)
+		
+		if information == 'error':
+			y,x = can.shape
+			if M.x_max < x:
+				return 'image too wide!'
+			else:
+				return 'none'
+
+class MotorControlWebService(object):
+	exposed = True
+	#max speed = 0.002
+	stepper_l = PiStepper([14,15,18,23],0.00001)
+	stepper_r = PiStepper([17,27,22,10],0.00001)
 	stift = PiServo(7, 1700, 1800)
 	
 	def PUT(self,motor,steps,direction):
@@ -52,13 +71,12 @@ class PictureUpload(object):
 			out.write(data)
 		out.close()
 		
-		img = cv2.imread("public/pics/img.jpg",0)
-
-		## <-------------- scale img here
-
-		# edges
-		can = cv2.Canny(img, 200,200)
+		#img = cv2.imread("public/pics/img.jpg",1)
+		im_gray = cv2.imread('public/pics/img.jpg', cv2.CV_LOAD_IMAGE_GRAYSCALE)
+		#(thresh, im_bw) = cv2.threshold(im_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 		
+		# edges
+		can = cv2.Canny(im_gray, 100,200)
 		cv2.imwrite("public/pics/canny.jpg",can)
 		return """<html><body>done<a href="/">back<a/>"""
 
@@ -80,13 +98,21 @@ if __name__ == '__main__':
 			'tools.response_headers.on': True,
 			'tools.response_headers.headers': [('Content-Type', 'text/plain')],
 		},
+		'/indicator': {
+			'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+			'tools.response_headers.on': True,
+			'tools.response_headers.headers': [('Content-Type', 'text/plain')],
+		},
 		'/static': {
 			'tools.staticdir.on': True,
 			'tools.staticdir.dir': './public'
 		}
 	}
 	
+	
 	webapp = MotorControl();
+	
 	webapp.control = MotorControlWebService()
+	webapp.indicator = Indication()
 	webapp.picupload = PictureUpload()
 	cherrypy.quickstart(webapp,'/', conf)
