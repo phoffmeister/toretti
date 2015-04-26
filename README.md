@@ -10,7 +10,7 @@ You have basic moving control by a webinterface. As well you can upload and star
   - 2 times 28BYJ-48 each driven by ULN2003A
   - a servo motor
   - a pen
-.2 Software
+2. Software
   - open cv
   - RPIO
   - cherrypy
