@@ -21,12 +21,19 @@ class Indication(object):
 		can = cv2.Canny(img, 100,200)
 		
 		if information == 'time':
-			return str(get_time(can,M)/60)
+			t = get_time(can,M)
+			if t < 60:
+				return '%d Sekunden'%t
+			else:
+				if t < 3600:
+					return '%d Minuten'%(int(t/60))
+				else:
+					return '%d Stunde/n %d Minute/n'%(t/3600, t/60-(int(t/3600)*60))
 		
 		if information == 'error':
 			y,x = can.shape
 			if M.x_max < x:
-				return 'image too wide!'
+				return 'Bild ist zu breit. Maximale breite: %d Pixel'%M.x_max
 			else:
 				return 'none'
 
