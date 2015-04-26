@@ -18,8 +18,8 @@ class PiServo(object):
 	
 	def draw_dot(self):
 		#standard wait times 0.6 0.7 0.3
-		sleep(0.01)
+		sleep(0.6)
 		self.down()
-		sleep(0.01)
+		sleep(0.7)
 		self.up()
-		sleep(0.01)
+		sleep(0.3)

@@ -40,8 +40,8 @@ class Indication(object):
 class MotorControlWebService(object):
 	exposed = True
 	#max speed = 0.002
-	stepper_l = PiStepper([14,15,18,23],0.00001)
-	stepper_r = PiStepper([17,27,22,10],0.00001)
+	stepper_l = PiStepper([14,15,18,23],0.002)
+	stepper_r = PiStepper([17,27,22,10],0.002)
 	stift = PiServo(7, 1700, 1800)
 	
 	def PUT(self,motor,steps,direction):
